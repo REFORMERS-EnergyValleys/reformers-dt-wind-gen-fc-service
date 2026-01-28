@@ -1,0 +1,173 @@
+services:
+  # ----------------------------------
+  # redis is the in-memory data-stream
+  # ----------------------------------
+  redis:
+    image: "redis:7.2.4-alpine"
+    command: >
+      --requirepass ${REDIS_PASSWORD}
+    restart: unless-stopped
+
+  # ------------------------------------
+  # timescale is the timeseries database
+  # ------------------------------------
+  timescale:
+    image: "timescale/timescaledb:latest-pg16"
+    environment:
+      POSTGRES_USER: ${POSTGRES_ADMIN_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
+      TIMESCALEDB_TELEMETRY: "off"
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+
+  # -------------------------------
+  # timescale database schema setup
+  # -------------------------------
+  db-scheme:
+    image: ait1/rdp-database:latest-dev
+    depends_on:
+      - timescale
+    environment:
+      POSTGRES_USER: ${POSTGRES_ADMIN_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
+      POSTGRES_DATA_SOURCE_USER: ${POSTGRES_DATA_SOURCE_USER}
+      POSTGRES_DATA_SOURCE_PASSWORD: ${POSTGRES_DATA_SOURCE_PASSWORD}
+      POSTGRES_DATA_VIS_USER: ${POSTGRES_DATA_VIS_USER}
+      POSTGRES_DATA_VIS_PASSWORD: ${POSTGRES_DATA_VIS_PASSWORD}
+      POSTGRES_DATA_PUB_VIS_USER: ${POSTGRES_DATA_PUB_VIS_USER}
+      POSTGRES_DATA_PUB_VIS_PASSWORD: ${POSTGRES_DATA_PUB_VIS_PASSWORD}
+      RDP_POSTGRES_HOST: timescale
+      RDP_POSTGRES_URL: postgresql://${POSTGRES_ADMIN_USER}:${POSTGRES_ADMIN_PASSWORD}@timescale:5432/${POSTGRES_DB}
+      RDP_POSTGRES_URL_INIT: postgresql://${POSTGRES_ADMIN_USER}:${POSTGRES_ADMIN_PASSWORD}@timescale:5432
+
+  # ----------------------------------------------------------------
+  # synchronizes data from redis streams into the timescale database
+  # ----------------------------------------------------------------
+  data-sync:
+    image: ait1/rdp-redsql:latest-dev
+    volumes:
+      - ./data-sync/config.yml:/etc/redsql/config.yml:ro
+    environment:
+      POSTGRES_USER: ${POSTGRES_DATA_SOURCE_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_DATA_SOURCE_PASSWORD}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    depends_on:
+      redis:
+        condition: service_started
+      db-scheme:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------------------
+  # the data crawler is used for querying the Open-Meteo forecast fo a certain GPS location
+  # ---------------------------------------------------------------------------------------
+  data-crawler:
+    image: ait1/rdp-data-crawler:latest-dev
+    depends_on:
+      - redis
+    environment:
+      DATA_CRAWLER_CONTACT: ${DATA_CRAWLER_CONTACT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - ./data-crawler/config.yml:/etc/data_crawler/config.yml
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------------------
+  # This is the service that gets the weather forecast from the data crawler and
+  # then makes the predictions of the wind production time-series with eolica
+  # ----------------------------------------------------------------------------
+  wind-gen-fc:
+    image: reformers-dev.ait.ac.at:8083/reformers-dt-wind-gen-fc/v1/wind-gen-fc:latest
+    env_file:
+      - ./wind-gen-fc/model.env
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    depends_on:
+      - data-crawler
+      - knowledge-graph-setup
+    restart: unless-stopped
+
+  # ------------------------
+  # Knowledge graph database
+  # ------------------------
+  knowledge-graph:
+    image: "ontotext/graphdb:10.8.10"
+    restart: unless-stopped
+    command: [
+      "-Dgraphdb.workbench.importDirectory=/var/graphdb/import"
+    ]
+    volumes:
+      - knowledge-graph-data:/opt/graphdb/home
+      - ./knowledge-graph/data:/var/graphdb/import:ro
+    ports:
+     - "7200:7200"
+    healthcheck:
+      test: [
+        "CMD-SHELL", "curl -f http://localhost:7200/rest/repositories || exit 1"
+      ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # -------------------------------------------------
+  # Use GraphDB's REST API to create a new repository
+  # -------------------------------------------------
+  knowledge-graph-setup:
+    image: "ontotext/graphdb:10.8.10"
+    environment:
+      - GRAPHDB_HOST=knowledge-graph
+      - GRAPHDB_REPO_NAME=REFORMERS
+    volumes:
+      - ./knowledge-graph/api:/api:ro
+      - ./knowledge-graph/data:/import:ro
+    entrypoint: [
+      "/bin/sh", "-c",  "/api/setup.sh"
+    ]
+    depends_on:
+      knowledge-graph:
+        condition: service_healthy
+
+  # -----------------------------------
+  # grafana is the monitoring dashboard
+  # -----------------------------------
+  grafana:
+      image: grafana/grafana-oss:12.1.0
+      environment:
+        GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+        GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+        POSTGRES_DATA_VIS_USER: ${POSTGRES_DATA_VIS_USER}
+        POSTGRES_DATA_VIS_PASSWORD: ${POSTGRES_DATA_VIS_PASSWORD}
+        POSTGRES_DB: ${POSTGRES_DB}
+      ports:
+        - "3000:3000"
+      volumes:
+        - grafana-data:/var/lib/grafana
+        - ./grafana/provisioning:/etc/grafana/provisioning
+      depends_on:
+        db-scheme:
+          condition: service_completed_successfully
+      restart: unless-stopped
+
+  ## ---------------------------------------------------------------------------------
+  ## For debugging: use Redis Insight browser to explore the content of redis streams.
+  ## ---------------------------------------------------------------------------------
+  # redis-insight:
+  #   image: redis/redisinsight
+  #   restart: unless-stopped
+  #   environment:
+  #     - RI_REDIS_HOST0=redis
+  #     - RI_REDIS_PORT0=6379
+  #     - RI_REDIS_PASSWORD0=${REDIS_PASSWORD}
+  #     - RI_REDIS_ALIAS0=Wind Generation FC Redis Database
+  #   ports:
+  #     - 5540:5540
+  #   depends_on:
+  #     - redis
+
+volumes:
+  grafana-data:
+  knowledge-graph-data:
+  timescale-data:

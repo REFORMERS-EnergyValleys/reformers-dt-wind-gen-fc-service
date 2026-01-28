@@ -1,0 +1,33 @@
+version: 1
+data sources:
+  # ---------------------------------------------------------------------------
+  # openmeteo forecasts
+  # ---------------------------------------------------------------------------
+  weather.forecasts.openmeteo.Alkmaar:
+    type: "data_crawler.sources.open_meteo.OpenMeteoForecast"
+    source parameter:  # Parameters passed on to the data source
+      latitude: 52.593
+      longitude: 4.752
+      contact address: !env-template "${DATA_CRAWLER_CONTACT}" # Some e-mail to sent along the user agent (required)
+    polling:  # Polling interval specification
+      frequency: 30min
+      offset: 10min
+      jitter: 2.0min
+    redis:
+      stream: "weather.forecasts.openmeteo.Alkmaar"
+      tags: # Additional Redis tags that will be appended
+        location: "Alkmaar"
+        provider: "openmeteo"
+        device_id: "foobar"
+
+redis:
+  host: redis
+  port: 6379
+  db: 0
+  password: ${REDIS_PASSWORD}
+
+logging:
+  loggers:
+    urllib3.connectionpool:
+      level: INFO
+      handlers: ["console"]

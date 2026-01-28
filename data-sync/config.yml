@@ -1,0 +1,165 @@
+# The version of the configuration file. Currently, only version 1 is supported.
+version: 1
+
+x-channels:
+  # ---------------------------------------------------------------------------
+  # Template for standard forecasting data formats 
+  # ---------------------------------------------------------------------------
+  forecasts:
+    encoding: &fc-encoding
+      _default: "JSON"
+      forecast_time: "JSONDatetimeString"
+      observation_time: "JSONListWithDatetimeStrings"
+    steps: &fc-steps
+      - type: "SplitByKey"
+        always include: ["forecast_time", "observation_time", "latitude", "longitude", "altitude", "location", "provider", "device_id"]
+        destination key: "value"
+        source output key: "observation_type"
+      - type: "CachedSQLQuery"
+        cache keys: ["location", "provider", "observation_type"]
+        single value: True
+        query: "SELECT get_or_create_data_point_id(:observation_type, :device_id, :location, :provider) AS dp_id;"
+      - type: "UnpackArrayValues"
+        unpack keys: ["observation_time", "value"]
+    data sink: &fc-sink
+      table: "forecasts"
+      update duplicate values: True
+      columns:
+        dp_id: "dp_id"
+        obs_time: "observation_time"
+        fc_time: "forecast_time"
+        value: "value"
+
+
+## The list of channel configurations. Each configuration specifies a single chain of processing steps
+channels:
+
+## forget for now  ## ---------------------------------------------------------------------------
+## forget for now  ## The weather forecast
+## forget for now  ## ---------------------------------------------------------------------------
+## forget for now  reformers.metering_data.DUMMY1:
+## forget for now    trigger:
+## forget for now      stream id: "reformers.metering_data.DUMMY1"
+## forget for now      trim length: 100
+## forget for now    encoding:
+## forget for now      _default: "JSON"
+## forget for now    steps:
+## forget for now      - type: "UnpackArrayValues"
+## forget for now        unpack keys: ["p_mw", "q_mvar", "id"]
+## forget for now      - type: "SplitByKey"
+## forget for now        always include: ["timestamp", "location_id", "data_provider", "id"]
+## forget for now        destination key: "value"
+## forget for now        source output key: "observation_type"
+## forget for now      - type: "CachedSQLQuery"
+## forget for now        cache keys: ["id", "location_id", "data_provider", "observation_type"]
+## forget for now        single value: True
+## forget for now        query: "SELECT get_or_create_data_point_id(:observation_type, :id, :location_id, :data_provider) AS dp_id;"
+## forget for now    data sink:
+## forget for now      table: "measurements"
+## forget for now      update duplicate values: True
+## forget for now      columns:
+## forget for now        dp_id: "dp_id"
+## forget for now        obs_time: "timestamp"
+## forget for now        value: "value"
+
+  ## ---------------------------------------------------------------------------
+  ## Grid simulation results for busses.
+  ## ---------------------------------------------------------------------------
+  # reformers.windforecast.eolica:
+  #   trigger:
+  #     stream id: "windforecast.eolica.Alkmaar"
+  #     trim length: 1000
+  #   encoding:
+  #     _default: "JSON"
+  #   steps:
+  #     - type: "UnpackArrayValues"
+  #       unpack keys: ["forecast_time", "turbine_output_0", "turbine_output_1", "turbine_output_2", "turbine_output_3", "ws"]
+  #     - type: "SplitByKey"
+  #       always include: ["forecast_time", "location_id", "data_provider", "id_bus"]
+  #       destination key: "value"
+  #       source output key: "observation_type"
+  #     - type: "CachedSQLQuery"
+  #       cache keys: ["id_bus", "location_id", "data_provider", "observation_type"]
+  #       single value: True
+  #       query: "SELECT get_or_create_data_point_id(:observation_type, :id_bus, :location_id, :data_provider) AS dp_id;"
+  #   data sink:
+  #     table: "forecasts"
+  #     update duplicate values: True
+  #     columns:
+  #       dp_id: "dp_id"
+  #       obs_time: "timestamp"
+  #       value: "value"
+
+
+  weather.forecasts.met-no.Alkmaar:
+    trigger:
+      stream id: "weather.forecasts.met-no.Alkmaar"
+      trim length: 100
+    encoding: *fc-encoding
+    steps: *fc-steps
+    data sink: *fc-sink
+
+
+  windforecast.eolica.Alkmaar:
+    trigger:
+      stream id: "windforecast.eolica.Alkmaar"
+      trim length: 100
+    encoding: 
+      _default: "JSON"
+      forecast_time: "JSONListWithDatetimeStrings"
+      # observation_time: "JSONListWithDatetimeStrings"
+    steps: 
+      - type: "SplitByKey"
+        # always include: ["forecast_time", "turbine_output_0", "turbine_output_1", "turbine_output_2", "turbine_output_3", "turbine_effective_ws_0", "turbine_effective_ws_1", "turbine_effective_ws_2", "turbine_effective_ws_3", "wd", "ws"]
+        
+        always include: ['forecast_time']
+        destination key: "value"
+        source output key: "observation_type"
+      - type: "CachedSQLQuery"
+        cache keys: ["observation_type"]
+        single value: True
+        query: "SELECT get_or_create_data_point_id(:observation_type, 'windpark', 'alkmaar', 'eolica') AS dp_id;"
+      - type: "UnpackArrayValues"
+        unpack keys: ["forecast_time", "value"]
+    data sink: 
+      table: "forecasts"
+      update duplicate values: True
+      columns:
+        dp_id: "dp_id"
+        obs_time: "forecast_time"
+        fc_time: "forecast_time"
+        value: "value"
+
+  ## ---------------------------------------------------------------------------
+  ## Grid simulation results for max. loading of lines and trafo.
+  ## ---------------------------------------------------------------------------
+  # reformers.grid_sim.results.max_loading_percent:
+  #   trigger:
+  #     stream id: "reformers.grid_sim.results.max_loading_percent"
+  #     trim length: 100
+  #   encoding:
+  #     _default: "JSON"
+  #   steps:
+  #     - type: "SplitByKey"
+  #       always include: ["timestamp", "location_id", "data_provider"]
+  #       destination key: "value"
+  #       source output key: "observation_type"
+  #     - type: "CachedSQLQuery"
+  #       cache keys: ["location_id", "data_provider", "observation_type"]
+  #       single value: True
+  #       query: "SELECT get_or_create_data_point_id(:observation_type, NULL, :location_id, :data_provider) AS dp_id;"
+  #   data sink:
+  #     table: "measurements"
+  #     update duplicate values: True
+  #     columns:
+  #       dp_id: "dp_id"
+  #       obs_time: "timestamp"
+  #       value: "value"
+
+## The connection to the destination database
+database connection: !env-template "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@timescale/rdp_db"
+redis:
+  host: redis
+  port: 6379
+  db: 0
+  password: ${REDIS_PASSWORD}

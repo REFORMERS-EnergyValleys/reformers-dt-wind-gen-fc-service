@@ -1,0 +1,11 @@
+generator_name: reformers-dt-wind-gen-fc
+generator_tag: v1
+model_name: wind-gen-fc
+model_tag: latest
+force_generation: false
+generation_parameters:
+  PARK_NAME: WindparkAlkmaar
+  SCENARIO: BaselineAlkmaar
+parameters:
+  KNOWLEDGE_GRAPH_ENABLED: true
+  KNOWLEDGE_GRAPH_ENDPOINT: http://knowledge-graph:7200/repositories/REFORMERS

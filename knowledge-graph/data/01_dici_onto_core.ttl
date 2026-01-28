@@ -1,0 +1,1203 @@
+@prefix dici_core: <urn:digicities:core#> .
+@prefix fibo-currency: <https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:digicities:core> a owl:Ontology .
+
+dici_core:Author a owl:AnnotationProperty .
+
+dici_core:Collaborator a owl:AnnotationProperty .
+
+dici_core:Institution a owl:AnnotationProperty .
+
+dici_core:Synonymous a owl:AnnotationProperty .
+
+dici_core:abbreviation a owl:AnnotationProperty .
+
+dici_core:definition a owl:AnnotationProperty .
+
+dici_core:hasDefaultUnit a owl:AnnotationProperty ;
+                         rdfs:range qudt:Unit ;
+                         rdfs:domain dici_core:Attribute .
+
+dici_core:hasQuantityKind a owl:AnnotationProperty ;
+                          rdfs:range qudt:QuantityKind ;
+                          rdfs:domain dici_core:Attribute .
+
+xsd:duration a rdfs:Datatype .
+
+qudt:unit a owl:ObjectProperty ;
+          rdfs:subPropertyOf dici_core:hasUnit ;
+          rdfs:domain dici_core:Attribute ;
+          rdfs:range qudt:Unit .
+
+dici_core:actuates a owl:ObjectProperty ;
+                   rdfs:subPropertyOf dici_core:controls ;
+                   rdfs:domain dici_core:Actuator ;
+                   rdfs:range dici_core:Component ;
+                   rdfs:comment "Actuator physically controls a component"@en ;
+                   rdfs:label "actuates" .
+
+dici_core:assumptionObjectProperty a owl:ObjectProperty .
+
+dici_core:carriesEnergyCarrier a owl:ObjectProperty ;
+                               rdfs:subPropertyOf dici_core:carriesResource ;
+                               rdfs:domain dici_core:EnergyCarrierFlow ;
+                               rdfs:range dici_core:EnergyCarrier ;
+                               rdfs:label "carries energy carrier" .
+
+dici_core:carriesResource a owl:ObjectProperty ;
+                          rdfs:domain dici_core:Flow ;
+                          rdfs:range dici_core:Resource ;
+                          rdfs:comment "The resource (energy carrier or material) being transported by the flow"@en ;
+                          rdfs:label "carries resource" .
+
+dici_core:controls a owl:ObjectProperty ;
+                   rdfs:subPropertyOf dici_core:linksComponent ;
+                   rdfs:domain dici_core:Device ;
+                   rdfs:range dici_core:Component ;
+                   rdfs:comment "Device controls another component"@en ;
+                   rdfs:label "controls" .
+
+dici_core:currency a owl:ObjectProperty ;
+                   rdfs:domain dici_core:CostAttribute ;
+                   rdfs:range fibo-currency:Currency ;
+                   rdfs:label "currency" .
+
+dici_core:derivedFrom a owl:ObjectProperty ;
+                      rdfs:domain dici_core:Scenario ;
+                      rdfs:range dici_core:Scenario .
+
+dici_core:fedBy a owl:ObjectProperty ;
+                rdfs:subPropertyOf dici_core:linksComponent ;
+                owl:inverseOf dici_core:feeds ;
+                rdfs:domain dici_core:Component ;
+                rdfs:range dici_core:Component .
+
+dici_core:feeds a owl:ObjectProperty ;
+                rdfs:subPropertyOf dici_core:linksComponent .
+
+dici_core:flowsThrough a owl:ObjectProperty ;
+                       rdfs:subPropertyOf dici_core:linksComponent ;
+                       rdfs:domain dici_core:Flow ;
+                       rdfs:range dici_core:Location ;
+                       rdfs:comment "Locations traversed by a flow"@en ;
+                       rdfs:label "flows through" .
+
+dici_core:hasActorAttribute a owl:ObjectProperty ;
+                            rdfs:subPropertyOf dici_core:hasComponentAttribute ;
+                            rdfs:domain dici_core:Actor ;
+                            rdfs:range dici_core:ActorAttribute ;
+                            rdfs:label "has actor attribute" .
+
+dici_core:hasActuatorAttribute a owl:ObjectProperty ;
+                               rdfs:subPropertyOf dici_core:hasDeviceAttribute ;
+                               rdfs:domain dici_core:Actuator ;
+                               rdfs:range dici_core:ActuatorAttribute ;
+                               rdfs:label "has actuator attribute" .
+
+dici_core:hasAttribute a owl:ObjectProperty ;
+                       rdfs:domain dici_core:Component ;
+                       rdfs:range dici_core:Attribute ;
+                       rdfs:label "has Attribute" .
+
+dici_core:hasColdAttribute a owl:ObjectProperty ;
+                           rdfs:subPropertyOf dici_core:hasThermalEnergyAttribute ;
+                           rdfs:domain dici_core:ColdCarrier .
+
+dici_core:hasComponentAttribute a owl:ObjectProperty ;
+                                rdfs:subPropertyOf dici_core:hasAttribute .
+
+dici_core:hasControllerAttribute a owl:ObjectProperty ;
+                                 rdfs:subPropertyOf dici_core:hasDeviceAttribute ;
+                                 rdfs:domain dici_core:Controller ;
+                                 rdfs:range dici_core:ControllerAttribute ;
+                                 rdfs:label "has controller attribute" .
+
+dici_core:hasConversionProcessAttribute a owl:ObjectProperty ;
+                                        rdfs:subPropertyOf dici_core:hasProcessAttribute ;
+                                        rdfs:domain dici_core:ConversionProcess ;
+                                        rdfs:range dici_core:ConversionProcessAttribute ;
+                                        rdfs:label "has conversion process attribute" .
+
+dici_core:hasConverterAttribute a owl:ObjectProperty ;
+                                rdfs:subPropertyOf dici_core:hasComponentAttribute ;
+                                rdfs:domain dici_core:Converter .
+
+dici_core:hasDataPoints a owl:ObjectProperty ;
+                        rdfs:label "has data points" ;
+                        rdfs:domain dici_core:CurveAttribute ;
+                        rdfs:range rdf:JSON .
+
+dici_core:hasDestination a owl:ObjectProperty ;
+                         rdfs:subPropertyOf dici_core:linksComponent ;
+                         owl:inverseOf dici_core:isDestinationOf ;
+                         rdfs:domain dici_core:Flow ;
+                         rdfs:range dici_core:Component ;
+                         rdfs:comment "The component to which the flow is directed"@en ;
+                         rdfs:label "has destination" .
+
+dici_core:hasDeviceAttribute a owl:ObjectProperty ;
+                             rdfs:subPropertyOf dici_core:hasComponentAttribute ;
+                             rdfs:domain dici_core:Device ;
+                             rdfs:range dici_core:DeviceAttribute ;
+                             rdfs:label "has device attribute" .
+
+dici_core:hasElectricityAttribute a owl:ObjectProperty ;
+                                  rdfs:subPropertyOf dici_core:hasEnergyCarrierAttribute ;
+                                  rdfs:domain dici_core:ElectricityCarrier .
+
+dici_core:hasEnergyCarrierAttribute a owl:ObjectProperty ;
+                                    rdfs:subPropertyOf dici_core:hasComponentAttribute ;
+                                    rdfs:domain dici_core:EnergyCarrier .
+
+dici_core:hasEnergyCarrierEnergyCostAttribute a owl:ObjectProperty ;
+                                              rdfs:subPropertyOf dici_core:hasEnergyCarrierAttribute ;
+                                              rdfs:range dici_core:EnergyCostAttribute .
+
+dici_core:hasEnergyCarrierFlowAttribute a owl:ObjectProperty ;
+                                        rdfs:subPropertyOf dici_core:hasFlowAttribute ;
+                                        rdfs:domain dici_core:EnergyCarrierFlow ;
+                                        rdfs:range dici_core:EnergyCarrierFlowAttribute ;
+                                        rdfs:label "has energy carrier flow attribute" .
+
+dici_core:hasEnergyConsumerAttribute a owl:ObjectProperty ;
+                                     rdfs:subPropertyOf dici_core:hasComponentAttribute ;
+                                     rdfs:domain dici_core:EnergyConsumer .
+
+dici_core:hasEnergyConverterAttribute a owl:ObjectProperty ;
+                                      rdfs:subPropertyOf dici_core:hasConverterAttribute ;
+                                      rdfs:domain dici_core:EnergyConverter .
+
+dici_core:hasFlowAttribute a owl:ObjectProperty ;
+                           rdfs:subPropertyOf dici_core:hasComponentAttribute ;
+                           rdfs:domain dici_core:Flow ;
+                           rdfs:range dici_core:FlowAttribute ;
+                           rdfs:label "has flow attribute" .
+
+dici_core:hasFuelAttribute a owl:ObjectProperty ;
+                           rdfs:subPropertyOf dici_core:hasEnergyCarrierAttribute ;
+                           rdfs:domain dici_core:FuelCarrier .
+
+dici_core:hasFutureTimeSeries a owl:ObjectProperty ;
+                              rdfs:subPropertyOf dici_core:hasTimeSeries ;
+                              owl:inverseOf dici_core:isFutureTimeSeriesOf .
+
+dici_core:hasGaseousFuelAttribute a owl:ObjectProperty ;
+                                  rdfs:subPropertyOf dici_core:hasFuelAttribute ;
+                                  rdfs:domain dici_core:GaseousFuelCarrier .
+
+dici_core:hasHeatAttribute a owl:ObjectProperty ;
+                           rdfs:subPropertyOf dici_core:hasThermalEnergyAttribute ;
+                           rdfs:domain dici_core:HeatCarrier .
+
+dici_core:hasHistoricTimeSeries a owl:ObjectProperty ;
+                                rdfs:subPropertyOf dici_core:hasTimeSeries ;
+                                owl:inverseOf dici_core:isHistoricTimeSeriesOf .
+
+dici_core:hasInputAttribute a owl:ObjectProperty ;
+                            owl:inverseOf dici_core:isAttributeOf ;
+                            rdfs:domain dici_core:ServiceRequirement ;
+                            rdfs:range dici_core:Attribute ;
+                            rdfs:label "has input attribute" .
+
+dici_core:hasInputEntity a owl:ObjectProperty ;
+                         owl:inverseOf dici_core:isEntityOf ;
+                         rdfs:domain dici_core:ComponentLink ,
+                                     dici_core:ServiceRequirement ;
+                         rdfs:range dici_core:Component ;
+                         rdfs:label "has input entity" .
+
+dici_core:hasInputFlow a owl:ObjectProperty ;
+                       rdfs:subPropertyOf dici_core:linksComponent ;
+                       rdfs:domain dici_core:Component ;
+                       rdfs:range dici_core:Flow ;
+                       rdfs:comment "Links a component to its input flows"@en ;
+                       rdfs:label "has input flow" .
+
+dici_core:hasJunctionAttribute a owl:ObjectProperty ;
+                               rdfs:subPropertyOf dici_core:hasComponentAttribute ;
+                               rdfs:domain dici_core:Junction ;
+                               rdfs:range dici_core:JunctionAttribute ;
+                               rdfs:label "has junction attribute" .
+
+dici_core:hasLiquidFuelAttribute a owl:ObjectProperty ;
+                                 rdfs:subPropertyOf dici_core:hasFuelAttribute ;
+                                 rdfs:domain dici_core:LiquidFuel .
+
+dici_core:hasLiveTimeSeries a owl:ObjectProperty ;
+                            rdfs:subPropertyOf dici_core:hasTimeSeries ;
+                            owl:inverseOf dici_core:isLiveTimeSeriesOf .
+
+dici_core:hasLocationAttribute a owl:ObjectProperty ;
+                               rdfs:subPropertyOf dici_core:hasComponentAttribute ;
+                               rdfs:domain dici_core:Location ;
+                               rdfs:range dici_core:LocationAttribute ;
+                               rdfs:label "has location attribute" .
+
+dici_core:hasMaterialConverterAttribute a owl:ObjectProperty ;
+                                        rdfs:subPropertyOf dici_core:hasConverterAttribute ;
+                                        rdfs:domain dici_core:MaterialConverter .
+
+dici_core:hasMaterialFlowAttribute a owl:ObjectProperty ;
+                                   rdfs:subPropertyOf dici_core:hasFlowAttribute ;
+                                   rdfs:domain dici_core:MaterialFlow ;
+                                   rdfs:range dici_core:MaterialFlowAttribute ;
+                                   rdfs:label "has material flow attribute" .
+
+dici_core:hasMeterAttribute a owl:ObjectProperty ;
+                            rdfs:subPropertyOf dici_core:hasDeviceAttribute ;
+                            rdfs:domain dici_core:Meter ;
+                            rdfs:range dici_core:MeterAttribute ;
+                            rdfs:label "has meter attribute" .
+
+dici_core:hasNetworkAttribute a owl:ObjectProperty ;
+                              rdfs:subPropertyOf dici_core:hasComponentAttribute ;
+                              rdfs:domain dici_core:Network ;
+                              rdfs:range dici_core:NetworkAttribute ;
+                              rdfs:label "has network attribute" .
+
+dici_core:hasNonRenewableAttribute a owl:ObjectProperty ;
+                                   rdfs:subPropertyOf dici_core:hasResourceAttribute ;
+                                   rdfs:domain dici_core:NonRenewableResource .
+
+dici_core:hasOutputFlow a owl:ObjectProperty ;
+                        rdfs:subPropertyOf dici_core:linksComponent ;
+                        rdfs:domain dici_core:Component ;
+                        rdfs:range dici_core:Flow ;
+                        rdfs:comment "Links a component to its output flows"@en ;
+                        rdfs:label "has output flow" .
+
+dici_core:hasPart a owl:ObjectProperty ;
+                  rdfs:subPropertyOf dici_core:linksComponent ;
+                  owl:inverseOf dici_core:partOf .
+
+dici_core:hasProcessAttribute a owl:ObjectProperty ;
+                              rdfs:subPropertyOf dici_core:hasComponentAttribute ;
+                              rdfs:domain dici_core:Process ;
+                              rdfs:range dici_core:ProcessAttribute ;
+                              rdfs:label "has process attribute" .
+
+dici_core:hasRenewableAttribute a owl:ObjectProperty ;
+                                rdfs:subPropertyOf dici_core:hasResourceAttribute ;
+                                rdfs:domain dici_core:RenewableResource .
+
+dici_core:hasResourceAttribute a owl:ObjectProperty ;
+                               rdfs:subPropertyOf dici_core:hasComponentAttribute ;
+                               rdfs:domain dici_core:Resource .
+
+dici_core:hasSensorAttribute a owl:ObjectProperty ;
+                             rdfs:subPropertyOf dici_core:hasDeviceAttribute ;
+                             rdfs:domain dici_core:Sensor ;
+                             rdfs:range dici_core:SensorAttribute ;
+                             rdfs:label "has sensor attribute" .
+
+dici_core:hasSolarAttribute a owl:ObjectProperty ;
+                            rdfs:subPropertyOf dici_core:hasRenewableAttribute ;
+                            rdfs:domain dici_core:SolarResource .
+
+dici_core:hasSolidFuelAttribute a owl:ObjectProperty ;
+                                rdfs:subPropertyOf dici_core:hasFuelAttribute ;
+                                rdfs:domain dici_core:SolidFuel .
+
+dici_core:hasSource a owl:ObjectProperty ;
+                    rdfs:subPropertyOf dici_core:linksComponent ;
+                    owl:inverseOf dici_core:isSourceOf ;
+                    rdfs:domain dici_core:Flow ;
+                    rdfs:range dici_core:Component ;
+                    rdfs:comment "The component from which the flow originates"@en ;
+                    rdfs:label "has source" .
+
+dici_core:hasStorageAttribute a owl:ObjectProperty ;
+                              rdfs:subPropertyOf dici_core:hasComponentAttribute ;
+                              rdfs:domain dici_core:Storage ;
+                              rdfs:range dici_core:StorageAttribute ;
+                              rdfs:label "has storage attribute" .
+
+dici_core:hasSwitchAttribute a owl:ObjectProperty ;
+                             rdfs:subPropertyOf dici_core:hasDeviceAttribute ;
+                             rdfs:domain dici_core:Switch ;
+                             rdfs:range dici_core:SwitchAttribute ;
+                             rdfs:label "has switch attribute" .
+
+dici_core:hasThermalEnergyAttribute a owl:ObjectProperty ;
+                                    rdfs:subPropertyOf dici_core:hasEnergyCarrierAttribute ;
+                                    rdfs:domain dici_core:ThermalEnergyCarrier .
+
+dici_core:hasTimeSeries a owl:ObjectProperty ;
+                        owl:inverseOf dici_core:isTimeSeriesOf ;
+                        rdfs:domain dici_core:DynamicAttribute ;
+                        rdfs:range dici_core:TimeSeries ;
+                        rdfs:comment "Links a dynamic attribute to its associated time series data"@en ;
+                        rdfs:label "has time series" .
+
+dici_core:hasTransportProcessAttribute a owl:ObjectProperty ;
+                                       rdfs:subPropertyOf dici_core:hasProcessAttribute ;
+                                       rdfs:domain dici_core:TransportProcess ;
+                                       rdfs:range dici_core:TransportProcessAttribute ;
+                                       rdfs:label "has transport process attribute" .
+
+dici_core:hasUnit a owl:ObjectProperty ;
+                  rdfs:domain dici_core:Attribute ;
+                  rdfs:range qudt:Unit ;
+                  rdfs:label "has unit" .
+
+dici_core:hasWindAttribute a owl:ObjectProperty ;
+                           rdfs:subPropertyOf dici_core:hasRenewableAttribute ;
+                           rdfs:domain dici_core:Wind .
+
+dici_core:isAttributeOf a owl:ObjectProperty ;
+                        rdfs:domain dici_core:Attribute ;
+                        rdfs:range dici_core:ServiceRequirement ;
+                        rdfs:label "is attribute of" .
+
+dici_core:isDestinationOf a owl:ObjectProperty ;
+                          rdfs:subPropertyOf dici_core:linksComponent ;
+                          rdfs:domain dici_core:Component ;
+                          rdfs:range dici_core:Flow ;
+                          rdfs:label "is destination of" .
+
+dici_core:isEntityOf a owl:ObjectProperty ;
+                     rdfs:domain dici_core:Component ;
+                     rdfs:range dici_core:ServiceRequirement ;
+                     rdfs:label "is entity of" .
+
+dici_core:isFutureTimeSeriesOf a owl:ObjectProperty ;
+                               rdfs:subPropertyOf dici_core:isTimeSeriesOf ;
+                               rdfs:domain dici_core:FutureTimeSeries ;
+                               rdfs:range dici_core:DynamicAttribute .
+
+dici_core:isHistoricTimeSeriesOf a owl:ObjectProperty ;
+                                 rdfs:subPropertyOf dici_core:isTimeSeriesOf ;
+                                 rdfs:domain dici_core:HistoricTimeSeries ;
+                                 rdfs:range dici_core:DynamicAttribute .
+
+dici_core:isLiveTimeSeriesOf a owl:ObjectProperty ;
+                             rdfs:subPropertyOf dici_core:isTimeSeriesOf ;
+                             rdfs:domain dici_core:LiveTimeSeries ;
+                             rdfs:range dici_core:DynamicAttribute .
+
+dici_core:isRequiredBy a owl:ObjectProperty ;
+                       owl:inverseOf dici_core:requires ;
+                       rdfs:domain dici_core:ServiceRequirement ;
+                       rdfs:range dici_core:Service ;
+                       rdfs:label "is required by" .
+
+dici_core:isSourceOf a owl:ObjectProperty ;
+                     rdfs:subPropertyOf dici_core:linksComponent ;
+                     rdfs:domain dici_core:Component ;
+                     rdfs:range dici_core:Flow ;
+                     rdfs:label "is source of" .
+
+dici_core:isTimeSeriesOf a owl:ObjectProperty ;
+                         rdfs:domain dici_core:TimeSeries ;
+                         rdfs:range dici_core:DynamicAttribute ;
+                         rdfs:comment "Links a time series to the dynamic attribute it represents"@en ;
+                         rdfs:label "is time series of" .
+
+dici_core:linksComponent a owl:ObjectProperty ,
+                                  owl:SymmetricProperty ;
+                         rdfs:domain dici_core:Component ;
+                         rdfs:range dici_core:Component .
+
+dici_core:linksInputEntityTo a owl:ObjectProperty ;
+                             rdfs:domain dici_core:ComponentLink ;
+                             rdfs:range dici_core:Component .
+
+dici_core:locatedAt a owl:ObjectProperty ;
+                    rdfs:subPropertyOf dici_core:linksComponent ;
+                    rdfs:domain dici_core:Component ;
+                    rdfs:range dici_core:Location ;
+                    rdfs:comment "Physical location of a component"@en ;
+                    rdfs:label "located at" .
+
+dici_core:locatedIn a owl:ObjectProperty ;
+                    rdfs:subPropertyOf dici_core:linksComponent ;
+                    owl:inverseOf dici_core:locationOf ;
+                    rdfs:domain dici_core:Location .
+
+dici_core:locationOf a owl:ObjectProperty ;
+                     rdfs:subPropertyOf dici_core:linksComponent .
+
+dici_core:measures a owl:ObjectProperty ;
+                   rdfs:domain dici_core:Device ;
+                   rdfs:range dici_core:Attribute ;
+                   rdfs:comment "Device measures a specific attribute"@en ;
+                   rdfs:label "measures" .
+
+dici_core:monitors a owl:ObjectProperty ;
+                   rdfs:subPropertyOf dici_core:linksComponent ;
+                   rdfs:domain dici_core:Device ;
+                   rdfs:range dici_core:Component ;
+                   rdfs:comment "Device monitors another component"@en ;
+                   rdfs:label "monitors" .
+
+dici_core:operates a owl:ObjectProperty ;
+                   rdfs:subPropertyOf dici_core:linksComponent ;
+                   rdfs:domain dici_core:Actor ;
+                   rdfs:range dici_core:Component ;
+                   rdfs:comment "Operational control relationship"@en ;
+                   rdfs:label "operates" .
+
+dici_core:owns a owl:ObjectProperty ;
+               rdfs:subPropertyOf dici_core:linksComponent ;
+               rdfs:domain dici_core:Actor ;
+               rdfs:range dici_core:Component ;
+               rdfs:comment "Ownership relationship between actors and components"@en ;
+               rdfs:label "owns" .
+
+dici_core:partOf a owl:ObjectProperty ;
+                 rdfs:subPropertyOf dici_core:linksComponent .
+
+dici_core:realTimeSource a owl:ObjectProperty ;
+                         rdfs:domain dici_core:DynamicAttribute ;
+                         rdfs:comment "Reference to a real-time data source for live dynamic attributes"@en ;
+                         rdfs:label "real-time source" .
+
+dici_core:requires a owl:ObjectProperty ;
+                   rdfs:domain dici_core:Service ;
+                   rdfs:range dici_core:ServiceRequirement ;
+                   rdfs:label "requires" .
+
+dici_core:targetAttribute a owl:ObjectProperty ;
+                          rdfs:subPropertyOf dici_core:assumptionObjectProperty ;
+                          rdfs:domain dici_core:Assumption ;
+                          rdfs:range dici_core:Attribute .
+
+dici_core:targetComponent a owl:ObjectProperty ;
+                          rdfs:subPropertyOf dici_core:assumptionObjectProperty ;
+                          rdfs:domain dici_core:Assumption ;
+                          rdfs:range dici_core:Component .
+
+dici_core:usedInScenario a owl:ObjectProperty ;
+                         rdfs:domain dici_core:Attribute ,
+                                     dici_core:Component ,
+                                     dici_core:ComponentLink ;
+                         rdfs:range dici_core:Scenario .
+
+dici_core:xAttribute a owl:ObjectProperty ;
+                     rdfs:domain dici_core:CurveAttribute ;
+                     rdfs:range qudt:QuantityKind ;
+                     rdfs:label "x attribute" .
+
+dici_core:xUnit a owl:ObjectProperty ;
+                rdfs:subPropertyOf dici_core:hasUnit ;
+                rdfs:domain dici_core:CurveAttribute ;
+                rdfs:range qudt:Unit ;
+                rdfs:label "x unit" .
+
+dici_core:yAttribute a owl:ObjectProperty ;
+                     rdfs:domain dici_core:CurveAttribute ;
+                     rdfs:range qudt:QuantityKind ;
+                     rdfs:label "y attribute" .
+
+dici_core:yUnit a owl:ObjectProperty ;
+                rdfs:subPropertyOf dici_core:hasUnit ;
+                rdfs:domain dici_core:CurveAttribute ;
+                rdfs:range qudt:Unit ;
+                rdfs:label "y unit" .
+
+qudt:numericValue a owl:DatatypeProperty .
+
+qudt:value a owl:DatatypeProperty ;
+           rdfs:subPropertyOf dici_core:hasAttributeValue ;
+           rdfs:domain dici_core:Attribute .
+
+dici_core:assumptionDataProperty a owl:DatatypeProperty .
+
+dici_core:assumptionTimesteps a owl:DatatypeProperty ;
+                              rdfs:subPropertyOf dici_core:assumptionDataProperty ;
+                              rdfs:domain dici_core:AssumptionSeries .
+
+dici_core:endTime a owl:DatatypeProperty ;
+                  rdfs:domain dici_core:TimeSeries ;
+                  rdfs:range xsd:dateTime ;
+                  rdfs:comment "The ending timestamp of the time series data"@en ;
+                  rdfs:label "end time" .
+
+dici_core:hasAttributeValue a owl:DatatypeProperty ;
+                            rdfs:domain dici_core:Attribute ;
+                            rdfs:label "has attribute value" .
+
+dici_core:hasDataPath a owl:DatatypeProperty ;
+                      rdfs:subPropertyOf dici_core:hasAttributeValue ;
+                      rdfs:domain dici_core:CurveAttribute ;
+                      rdfs:range xsd:string ;
+                      rdfs:label "has data path" .
+
+dici_core:hasDataPoints a owl:DatatypeProperty ;
+                        rdfs:subPropertyOf dici_core:hasAttributeValue .
+
+dici_core:hasFileName a owl:DatatypeProperty ;
+                      rdfs:domain dici_core:TimeSeries ;
+                      rdfs:range xsd:string ;
+                      rdfs:comment "The filename of the time series data file"@en ;
+                      rdfs:label "has file name" .
+
+dici_core:modifier a owl:DatatypeProperty ;
+                   rdfs:subPropertyOf dici_core:assumptionDataProperty .
+
+dici_core:modifierValue a owl:DatatypeProperty ;
+                        rdfs:subPropertyOf dici_core:assumptionDataProperty .
+
+dici_core:populationInfluenced a owl:DatatypeProperty ;
+                               rdfs:subPropertyOf dici_core:assumptionDataProperty .
+
+dici_core:startTime a owl:DatatypeProperty ;
+                    rdfs:domain dici_core:TimeSeries ;
+                    rdfs:range xsd:dateTime ;
+                    rdfs:comment "The starting timestamp of the time series data"@en ;
+                    rdfs:label "start time" .
+
+dici_core:storedAt a owl:DatatypeProperty ;
+                   rdfs:domain dici_core:TimeSeries ;
+                   rdfs:range xsd:string ;
+                   rdfs:comment "The location or path where the time series data is stored"@en ;
+                   rdfs:label "stored at" .
+
+dici_core:temporalResolution a owl:DatatypeProperty ;
+                             rdfs:domain dici_core:TimeSeries ;
+                             rdfs:range xsd:duration ;
+                             rdfs:comment "The time interval between data points in the time series (e.g., PT1H for hourly, PT15M for 15-minute intervals)"@en ;
+                             rdfs:label "temporal resolution" .
+
+dici_core:timeSeriesType a owl:DatatypeProperty ;
+                         rdfs:domain dici_core:TimeSeries ;
+                         rdfs:range xsd:string ;
+                         rdfs:comment "The type of time series: 'Historic', 'Live', or 'Future'"@en ;
+                         rdfs:label "time series type" .
+
+qudt:QuantityKind a owl:Class .
+
+qudt:Unit a owl:Class .
+
+rdf:JSON a owl:Class .
+
+dici_core:Actor a owl:Class ;
+                rdfs:subClassOf dici_core:Component ;
+                rdfs:comment "Human or organizational agent that owns, operates, or regulates components"@en ;
+                rdfs:label "Actor" ;
+                dici_core:definition "Actors represent stakeholders in the energy system including operators, regulators, consumers, and policy makers"@en .
+
+dici_core:ActorAttribute a owl:Class ;
+                         rdfs:subClassOf dici_core:ComponentAttribute ;
+                         rdfs:label "Actor Attribute" .
+
+dici_core:Actuator a owl:Class ;
+                   rdfs:subClassOf dici_core:Device ;
+                   rdfs:comment "Device that converts control signals into physical action"@en ;
+                   rdfs:label "Actuator" ;
+                   dici_core:definition "Actuators are devices that produce motion or control mechanisms based on input signals"@en .
+
+dici_core:ActuatorAttribute a owl:Class ;
+                            rdfs:subClassOf dici_core:DeviceAttribute ;
+                            rdfs:label "Actuator Attribute" .
+
+dici_core:ActuatorPosition a owl:Class ;
+                           rdfs:subClassOf dici_core:ActuatorAttribute ,
+                                           dici_core:DynamicAttribute ;
+                           rdfs:comment "Current position or state of an actuator"@en ;
+                           rdfs:label "Actuator Position" ;
+                           dici_core:hasDefaultUnit unit:PERCENT .
+
+dici_core:Assumption a owl:Class .
+
+dici_core:AssumptionSeries a owl:Class ;
+                           rdfs:subClassOf dici_core:Assumption .
+
+dici_core:AssumptionSingle a owl:Class ;
+                           rdfs:subClassOf dici_core:Assumption .
+
+dici_core:Attribute a owl:Class ;
+                    rdfs:subClassOf owl:Thing ;
+                    rdfs:label "Attribute" .
+
+dici_core:CircuitBreaker a owl:Class ;
+                         rdfs:subClassOf dici_core:Switch ;
+                         rdfs:comment "Switch that automatically interrupts electrical flow for safety"@en ;
+                         rdfs:label "Circuit Breaker" .
+
+dici_core:ColdCarrier a owl:Class ;
+                      rdfs:subClassOf dici_core:ThermalEnergyCarrier ;
+                      rdfs:label "Cold Carrier" .
+
+dici_core:ColdCarrierAttribute a owl:Class ;
+                               rdfs:subClassOf dici_core:ThermalEnergyCarrierAttribute .
+
+dici_core:Component a owl:Class .
+
+dici_core:ComponentAttribute a owl:Class ;
+                             rdfs:subClassOf dici_core:Attribute ;
+                             rdfs:label "Component Attribute" .
+
+dici_core:ComponentAttributeRequirement a owl:Class ;
+                                        rdfs:subClassOf dici_core:ServiceRequirement ;
+                                        rdfs:label "Component-Attribute Requirement" .
+
+dici_core:ComponentComponentRequirement a owl:Class ;
+                                        rdfs:subClassOf dici_core:ServiceRequirement ;
+                                        rdfs:label "Component-Component Requirement" .
+
+dici_core:ComponentLink a owl:Class .
+
+dici_core:Controller a owl:Class ;
+                     rdfs:subClassOf dici_core:Device ;
+                     rdfs:comment "Device that manages and coordinates other devices or processes"@en ;
+                     rdfs:label "Controller" ;
+                     dici_core:definition "Controllers implement control logic and coordinate the operation of other system components"@en .
+
+dici_core:ControllerAttribute a owl:Class ;
+                              rdfs:subClassOf dici_core:DeviceAttribute ;
+                              rdfs:label "Controller Attribute" .
+
+dici_core:ConversionProcess a owl:Class ;
+                            rdfs:subClassOf dici_core:Process ;
+                            rdfs:comment "Process that converts one form of energy to another"@en ;
+                            rdfs:label "Conversion Process" .
+
+dici_core:ConversionProcessAttribute a owl:Class ;
+                                     rdfs:subClassOf dici_core:ProcessAttribute ;
+                                     rdfs:label "Conversion Process Attribute" .
+
+dici_core:Converter a owl:Class ;
+                    rdfs:subClassOf dici_core:Component ;
+                    rdfs:label "Converter" .
+
+dici_core:ConverterAttribute a owl:Class ;
+                             rdfs:subClassOf dici_core:ComponentAttribute ;
+                             rdfs:label "Converter Attribute" .
+
+dici_core:CostAttribute a owl:Class ;
+                        rdfs:subClassOf dici_core:Attribute ;
+                        rdfs:label "Cost Attribute" ;
+                        dici_core:hasDefaultUnit unit:ONE .
+
+dici_core:CurveAttribute a owl:Class ;
+                         rdfs:subClassOf dici_core:Attribute ,
+                                         [ a owl:Restriction ;
+                                           owl:onProperty dici_core:xAttribute ;
+                                           owl:someValuesFrom qudt:QuantityKind
+                                         ] ,
+                                         [ a owl:Restriction ;
+                                           owl:onProperty dici_core:xUnit ;
+                                           owl:someValuesFrom qudt:Unit
+                                         ] ,
+                                         [ a owl:Restriction ;
+                                           owl:onProperty dici_core:yAttribute ;
+                                           owl:someValuesFrom qudt:QuantityKind
+                                         ] ,
+                                         [ a owl:Restriction ;
+                                           owl:onProperty dici_core:yUnit ;
+                                           owl:someValuesFrom qudt:Unit
+                                         ] ,
+                                         [ a owl:Restriction ;
+                                           owl:onProperty dici_core:hasAttributeValue ;
+                                           owl:someValuesFrom rdfs:Literal
+                                         ] ;
+                         rdfs:label "Curve Attribute" ;
+                         dici_core:definition "An attribute represented by a set of x,y coordinate pairs forming a curve"@en .
+
+dici_core:Damper a owl:Class ;
+                 rdfs:subClassOf dici_core:Actuator ;
+                 rdfs:comment "Actuator that controls air flow"@en ;
+                 rdfs:label "Damper" .
+
+dici_core:Device a owl:Class ;
+                 rdfs:subClassOf dici_core:Component ;
+                 rdfs:comment "Physical or virtual devices that monitor, control, or measure components in the energy system"@en ;
+                 rdfs:label "Device" ;
+                 dici_core:definition "Devices are components that provide sensing, actuation, measurement, or control capabilities within the energy system"@en .
+
+dici_core:DeviceAttribute a owl:Class ;
+                          rdfs:subClassOf dici_core:ComponentAttribute ;
+                          rdfs:label "Device Attribute" .
+
+dici_core:DynamicAttribute a owl:Class ;
+                           rdfs:subClassOf dici_core:Attribute ;
+                           rdfs:label "Dynamic Attribute" .
+
+dici_core:Efficiency a owl:Class ;
+                     rdfs:subClassOf dici_core:ConversionProcessAttribute ,
+                                     dici_core:StaticAttribute ;
+                     rdfs:comment "Conversion efficiency of a process"@en ;
+                     rdfs:label "Efficiency" ;
+                     dici_core:hasDefaultUnit unit:PERCENT .
+
+dici_core:ElectricityCarrier a owl:Class ;
+                             rdfs:subClassOf dici_core:EnergyCarrier ;
+                             rdfs:label "Electricity Carrier" .
+
+dici_core:ElectricityCarrierAttribute a owl:Class ;
+                                      rdfs:subClassOf dici_core:EnergyCarrierAttribute .
+
+dici_core:ElectricityDemandProfile a owl:Class ;
+                                   rdfs:subClassOf dici_core:DynamicAttribute ;
+                                   rdfs:comment "A dynamic attribute representing the electricity demand over time"@en ;
+                                   rdfs:label "Electricity Demand Profile" ;
+                                   dici_core:hasDefaultUnit unit:KiloW ;
+                                   dici_core:hasQuantityKind qudt:Power .
+
+dici_core:ElectricityFlow a owl:Class ;
+                          rdfs:subClassOf dici_core:EnergyCarrierFlow ;
+                          rdfs:label "Electricity Flow" ;
+                          dici_core:hasDefaultUnit unit:KiloW .
+
+dici_core:ElectricityMeter a owl:Class ;
+                           rdfs:subClassOf dici_core:Meter ;
+                           rdfs:label "Electricity Meter" ;
+                           dici_core:hasDefaultUnit unit:KiloW-HR .
+
+dici_core:EnergyCarrier a owl:Class ;
+                        rdfs:subClassOf dici_core:Component ;
+                        rdfs:label "Energy Carrier" .
+
+dici_core:EnergyCarrierAttribute a owl:Class ;
+                                 rdfs:subClassOf dici_core:ComponentAttribute .
+
+dici_core:EnergyCarrierFlow a owl:Class ;
+                            rdfs:subClassOf dici_core:Flow ;
+                            rdfs:comment "Flow of energy carriers between components"@en ;
+                            rdfs:label "Energy Carrier Flow" .
+
+dici_core:EnergyCarrierFlowAttribute a owl:Class ;
+                                     rdfs:subClassOf dici_core:FlowAttribute ;
+                                     rdfs:label "Energy Carrier Flow Attribute" .
+
+dici_core:EnergyConsumer a owl:Class ;
+                         rdfs:subClassOf dici_core:Component ;
+                         rdfs:label "Energy Consumer" .
+
+dici_core:EnergyConsumerAttribute a owl:Class ;
+                                  rdfs:subClassOf dici_core:ComponentAttribute .
+
+dici_core:EnergyConverter a owl:Class ;
+                          rdfs:subClassOf dici_core:Converter ;
+                          rdfs:label "Energy Converter" .
+
+dici_core:EnergyConverterAttribute a owl:Class ;
+                                   rdfs:subClassOf dici_core:ConverterAttribute .
+
+dici_core:EnergyCostAttribute a owl:Class ;
+                              rdfs:subClassOf dici_core:StaticAttribute ,
+                                              dici_core:UnitBasedCost ,
+                                              [ a owl:Restriction ;
+                                                owl:onProperty qudt:unit ;
+                                                owl:hasValue unit:KiloW-HR
+                                              ] ;
+                              rdfs:label "Energy Cost Attribute" ;
+                              dici_core:hasDefaultUnit unit:KiloW-HR .
+
+dici_core:EnergyStorage a owl:Class ;
+                        rdfs:subClassOf dici_core:Storage ;
+                        rdfs:label "Energy Storage" .
+
+dici_core:EnergyStorageAttribute a owl:Class ;
+                                 rdfs:subClassOf dici_core:StorageAttribute ;
+                                 rdfs:label "Energy Storage Attribute" .
+
+dici_core:Flow a owl:Class ;
+               rdfs:subClassOf dici_core:Component ;
+               rdfs:comment "Represents the movement or transfer of energy, materials, or information between components"@en ;
+               rdfs:label "Flow" ;
+               dici_core:definition "A flow captures the dynamic transfer of entities (energy carriers, materials, etc.) between system components, including quantity, direction, and temporal characteristics"@en .
+
+dici_core:FlowAttribute a owl:Class ;
+                        rdfs:subClassOf dici_core:ComponentAttribute ;
+                        rdfs:label "Flow Attribute" .
+
+dici_core:FlowCapacity a owl:Class ;
+                       rdfs:subClassOf dici_core:FlowAttribute ,
+                                       dici_core:StaticAttribute ;
+                       rdfs:comment "Maximum flow rate capacity"@en ;
+                       rdfs:label "Flow Capacity" ;
+                       dici_core:hasDefaultUnit unit:KiloW .
+
+dici_core:FlowRate a owl:Class ;
+                   rdfs:subClassOf dici_core:DynamicAttribute ,
+                                   dici_core:FlowAttribute ;
+                   rdfs:comment "Rate of flow over time"@en ;
+                   rdfs:label "Flow Rate" ;
+                   dici_core:hasDefaultUnit unit:KiloW .
+
+dici_core:FlowSensor a owl:Class ;
+                     rdfs:subClassOf dici_core:Sensor ;
+                     rdfs:label "Flow Sensor" ;
+                     dici_core:hasDefaultUnit unit:M3-PER-SEC .
+
+dici_core:FuelCarrier a owl:Class ;
+                      rdfs:subClassOf dici_core:EnergyCarrier ;
+                      rdfs:label "Fuel Carrier" .
+
+dici_core:FuelCarrierAttribute a owl:Class ;
+                               rdfs:subClassOf dici_core:EnergyCarrierAttribute .
+
+dici_core:FutureTimeSeries a owl:Class ;
+                           rdfs:subClassOf dici_core:TimeSeries ;
+                           rdfs:comment "Time series data representing forecasted or projected future values"@en ;
+                           rdfs:label "Future Time Series" .
+
+dici_core:GasFlow a owl:Class ;
+                  rdfs:subClassOf dici_core:EnergyCarrierFlow ;
+                  rdfs:label "Gas Flow" ;
+                  dici_core:hasDefaultUnit unit:M3-PER-SEC .
+
+dici_core:GasMeter a owl:Class ;
+                   rdfs:subClassOf dici_core:Meter ;
+                   rdfs:label "Gas Meter" ;
+                   dici_core:hasDefaultUnit unit:M3 .
+
+dici_core:GaseousFuelCarrier a owl:Class ;
+                             rdfs:subClassOf dici_core:FuelCarrier ;
+                             rdfs:label "Gaseous Fuel Carrier" .
+
+dici_core:GaseousFuelCarrierAttribute a owl:Class ;
+                                      rdfs:subClassOf dici_core:FuelCarrierAttribute .
+
+dici_core:GeospatialAttribute a owl:Class ;
+                              rdfs:subClassOf dici_core:Attribute ;
+                              rdfs:label "Geospatial Attribute" .
+
+dici_core:HeatCarrier a owl:Class ;
+                      rdfs:subClassOf dici_core:ThermalEnergyCarrier ;
+                      rdfs:label "Heat Carrier" .
+
+dici_core:HeatCarrierAttribute a owl:Class ;
+                               rdfs:subClassOf dici_core:ThermalEnergyCarrierAttribute .
+
+dici_core:HeatFlow a owl:Class ;
+                   rdfs:subClassOf dici_core:EnergyCarrierFlow ;
+                   rdfs:label "Heat Flow" ;
+                   dici_core:hasDefaultUnit unit:KiloW .
+
+dici_core:HeatMeter a owl:Class ;
+                    rdfs:subClassOf dici_core:Meter ;
+                    rdfs:label "Heat Meter" ;
+                    dici_core:hasDefaultUnit unit:KiloW-HR .
+
+dici_core:HistoricTimeSeries a owl:Class ;
+                             rdfs:subClassOf dici_core:TimeSeries ;
+                             rdfs:comment "Time series data representing past measurements or observations"@en ;
+                             rdfs:label "Historic Time Series" .
+
+dici_core:InformationFlow a owl:Class ;
+                          rdfs:subClassOf dici_core:Flow ;
+                          rdfs:comment "Flow of information or control signals between components"@en ;
+                          rdfs:label "Information Flow" .
+
+dici_core:InformationFlowAttribute a owl:Class ;
+                                   rdfs:subClassOf dici_core:FlowAttribute .
+
+dici_core:Junction a owl:Class ;
+                   rdfs:subClassOf dici_core:Component ;
+                   rdfs:comment "Component where multiple flows meet or diverge"@en ;
+                   rdfs:label "Junction" ;
+                   dici_core:definition "Junctions represent nodes where flows can be split, merged, or redirected without transformation"@en .
+
+dici_core:JunctionAttribute a owl:Class ;
+                            rdfs:subClassOf dici_core:ComponentAttribute ;
+                            rdfs:label "Junction Attribute" .
+
+dici_core:LiquidFuel a owl:Class ;
+                     rdfs:subClassOf dici_core:FuelCarrier ;
+                     rdfs:label "Liquid Fuel Carrier" .
+
+dici_core:LiquidFuelCarrierAttribute a owl:Class ;
+                                     rdfs:subClassOf dici_core:FuelCarrierAttribute .
+
+dici_core:LiquidFuelFlow a owl:Class ;
+                         rdfs:subClassOf dici_core:EnergyCarrierFlow ;
+                         rdfs:label "Liquid Fuel Flow" ;
+                         dici_core:hasDefaultUnit unit:L-PER-SEC .
+
+dici_core:LiveTimeSeries a owl:Class ;
+                         rdfs:subClassOf dici_core:TimeSeries ;
+                         rdfs:comment "Time series data representing real-time or near real-time measurements"@en ;
+                         rdfs:label "Live Time Series" .
+
+dici_core:Location a owl:Class ;
+                   rdfs:subClassOf dici_core:Component ;
+                   rdfs:comment "Spatial entity representing geographic areas or specific sites"@en ;
+                   rdfs:label "Location" ;
+                   dici_core:definition "Locations provide spatial context for components and flows, enabling geographic analysis and constraints"@en .
+
+dici_core:LocationAttribute a owl:Class ;
+                            rdfs:subClassOf dici_core:ComponentAttribute ;
+                            rdfs:label "Location Attribute" .
+
+dici_core:MaterialConverter a owl:Class ;
+                            rdfs:subClassOf dici_core:Converter ;
+                            rdfs:label "Material Converter" .
+
+dici_core:MaterialConverterAttribute a owl:Class ;
+                                     rdfs:subClassOf dici_core:ConverterAttribute .
+
+dici_core:MaterialFlow a owl:Class ;
+                       rdfs:subClassOf dici_core:Flow ;
+                       rdfs:comment "Flow of materials between components"@en ;
+                       rdfs:label "Material Flow" .
+
+dici_core:MaterialFlowAttribute a owl:Class ;
+                                rdfs:subClassOf dici_core:FlowAttribute ;
+                                rdfs:label "Material Flow Attribute" .
+
+dici_core:MaterialStorage a owl:Class ;
+                          rdfs:subClassOf dici_core:Storage ;
+                          rdfs:label "Material Storage" .
+
+dici_core:MeasurementAccuracy a owl:Class ;
+                              rdfs:subClassOf dici_core:DeviceAttribute ,
+                                              dici_core:StaticAttribute ;
+                              rdfs:comment "Accuracy specification of a measuring device"@en ;
+                              rdfs:label "Measurement Accuracy" ;
+                              dici_core:hasDefaultUnit unit:PERCENT .
+
+dici_core:MeasurementValue a owl:Class ;
+                           rdfs:subClassOf dici_core:DynamicAttribute ,
+                                           dici_core:SensorAttribute ;
+                           rdfs:comment "Current measured value from a sensor"@en ;
+                           rdfs:label "Measurement Value" .
+
+dici_core:Meter a owl:Class ;
+                rdfs:subClassOf dici_core:Device ;
+                rdfs:comment "Device that measures and records consumption or production of resources"@en ;
+                rdfs:label "Meter" ;
+                dici_core:definition "Meters measure cumulative quantities like energy consumption, flow volumes, or resource usage over time"@en .
+
+dici_core:MeterAttribute a owl:Class ;
+                         rdfs:subClassOf dici_core:DeviceAttribute ;
+                         rdfs:label "Meter Attribute" .
+
+dici_core:MeterReading a owl:Class ;
+                       rdfs:subClassOf dici_core:DynamicAttribute ,
+                                       dici_core:MeterAttribute ;
+                       rdfs:comment "Cumulative measurement from a meter"@en ;
+                       rdfs:label "Meter Reading" .
+
+dici_core:Network a owl:Class ;
+                  rdfs:subClassOf dici_core:Component ;
+                  rdfs:comment "Infrastructure for transporting energy carriers or materials"@en ;
+                  rdfs:label "Network" ;
+                  dici_core:definition "Networks represent the physical infrastructure that enables flows between components, such as electrical grids, gas pipelines, or district heating networks"@en .
+
+dici_core:NetworkAttribute a owl:Class ;
+                           rdfs:subClassOf dici_core:ComponentAttribute ;
+                           rdfs:label "Network Attribute" .
+
+dici_core:NonRenewableResource a owl:Class ;
+                               rdfs:subClassOf dici_core:Resource ;
+                               rdfs:label "Non Renewable Resource" .
+
+dici_core:NonRenewableResourceAttribute a owl:Class ;
+                                        rdfs:subClassOf dici_core:ResourceAttribute .
+
+dici_core:PowerSensor a owl:Class ;
+                      rdfs:subClassOf dici_core:Sensor ;
+                      rdfs:label "Power Sensor" ;
+                      dici_core:hasDefaultUnit unit:KiloW .
+
+dici_core:PressureSensor a owl:Class ;
+                         rdfs:subClassOf dici_core:Sensor ;
+                         rdfs:label "Pressure Sensor" ;
+                         dici_core:hasDefaultUnit unit:PA .
+
+dici_core:Process a owl:Class ;
+                  rdfs:subClassOf dici_core:Component ;
+                  rdfs:comment "A process that transforms, transports, or modifies flows of energy or materials"@en ;
+                  rdfs:label "Process" ;
+                  dici_core:definition "A process represents any activity or operation that has input and output flows, including energy conversion, material transformation, or transport operations"@en .
+
+dici_core:ProcessAttribute a owl:Class ;
+                           rdfs:subClassOf dici_core:ComponentAttribute ;
+                           rdfs:label "Process Attribute" .
+
+dici_core:ProcessCapacity a owl:Class ;
+                          rdfs:subClassOf dici_core:ProcessAttribute ,
+                                          dici_core:StaticAttribute ;
+                          rdfs:comment "Maximum processing capacity"@en ;
+                          rdfs:label "Process Capacity" ;
+                          dici_core:hasDefaultUnit unit:KiloW .
+
+dici_core:RenewableResource a owl:Class ;
+                            rdfs:subClassOf dici_core:Resource ;
+                            rdfs:label "Renewable Resource" .
+
+dici_core:RenewableResourceAttribute a owl:Class ;
+                                     rdfs:subClassOf dici_core:ResourceAttribute .
+
+dici_core:Resource a owl:Class ;
+                   rdfs:subClassOf dici_core:Component ;
+                   rdfs:label "Resource" .
+
+dici_core:ResourceAttribute a owl:Class ;
+                            rdfs:subClassOf dici_core:ComponentAttribute .
+
+dici_core:SamplingRate a owl:Class ;
+                       rdfs:subClassOf dici_core:SensorAttribute ,
+                                       dici_core:StaticAttribute ;
+                       rdfs:comment "Frequency of measurements or readings"@en ;
+                       rdfs:label "Sampling Rate" ;
+                       dici_core:hasDefaultUnit unit:HZ .
+
+dici_core:Scenario a owl:Class .
+
+dici_core:Sensor a owl:Class ;
+                 rdfs:subClassOf dici_core:Device ;
+                 rdfs:comment "Device that measures physical quantities and converts them to signals"@en ;
+                 rdfs:label "Sensor" ;
+                 dici_core:definition "Sensors detect and respond to inputs from the physical environment, providing data for monitoring and control"@en .
+
+dici_core:SensorAttribute a owl:Class ;
+                          rdfs:subClassOf dici_core:DeviceAttribute ;
+                          rdfs:label "Sensor Attribute" .
+
+dici_core:Service a owl:Class .
+
+dici_core:ServiceRequirement a owl:Class .
+
+dici_core:SetPoint a owl:Class ;
+                   rdfs:subClassOf dici_core:ControllerAttribute ,
+                                   dici_core:DynamicAttribute ;
+                   rdfs:comment "Target value for a controller"@en ;
+                   rdfs:label "Set Point" .
+
+dici_core:SimpleCost a owl:Class ;
+                     rdfs:subClassOf dici_core:CostAttribute ,
+                                     [ a owl:Restriction ;
+                                       owl:onProperty dici_core:currency ;
+                                       owl:someValuesFrom fibo-currency:Currency
+                                     ] ,
+                                     [ a owl:Restriction ;
+                                       owl:onProperty qudt:numericValue ;
+                                       owl:someValuesFrom xsd:decimal
+                                     ] ;
+                     rdfs:label "Simple Cost" .
+
+dici_core:SolarResource a owl:Class ;
+                        rdfs:subClassOf dici_core:RenewableResource ;
+                        rdfs:label "Solar Resource" .
+
+dici_core:SolarResourceAttribute a owl:Class ;
+                                 rdfs:subClassOf dici_core:RenewableResourceAttribute .
+
+dici_core:SolidFuel a owl:Class ;
+                    rdfs:subClassOf dici_core:FuelCarrier ;
+                    rdfs:label "Solid Fuel Carrier" .
+
+dici_core:SolidFuelCarrierAttribute a owl:Class ;
+                                    rdfs:subClassOf dici_core:FuelCarrierAttribute .
+
+dici_core:StateOfCharge a owl:Class ;
+                        rdfs:subClassOf dici_core:DynamicAttribute ,
+                                        dici_core:EnergyStorageAttribute ;
+                        rdfs:comment "Current state of charge as percentage of capacity"@en ;
+                        rdfs:label "State of Charge" ;
+                        dici_core:hasDefaultUnit unit:PERCENT .
+
+dici_core:StaticAttribute a owl:Class ;
+                          rdfs:subClassOf dici_core:Attribute ;
+                          rdfs:label "Static Attribute" .
+
+dici_core:Storage a owl:Class ;
+                  rdfs:subClassOf dici_core:Component ;
+                  rdfs:comment "Component that stores energy or materials over time"@en ;
+                  rdfs:label "Storage" ;
+                  dici_core:definition "Storage components accumulate and release energy or materials, providing temporal flexibility to the system"@en .
+
+dici_core:StorageAttribute a owl:Class ;
+                           rdfs:subClassOf dici_core:ComponentAttribute ;
+                           rdfs:label "Storage Attribute" .
+
+dici_core:StorageCapacity a owl:Class ;
+                          rdfs:subClassOf dici_core:StaticAttribute ,
+                                          dici_core:StorageAttribute ;
+                          rdfs:comment "Maximum storage capacity"@en ;
+                          rdfs:label "Storage Capacity" ;
+                          dici_core:hasDefaultUnit unit:KiloW-HR .
+
+dici_core:StorageProcess a owl:Class ;
+                         rdfs:subClassOf dici_core:Process ;
+                         rdfs:comment "Process that stores and releases energy or materials over time"@en ;
+                         rdfs:label "Storage Process" .
+
+dici_core:Switch a owl:Class ;
+                 rdfs:subClassOf dici_core:Device ;
+                 rdfs:comment "Device that can interrupt or divert the flow of energy or materials"@en ;
+                 rdfs:label "Switch" ;
+                 dici_core:definition "Switches control the routing or interruption of flows in the system"@en .
+
+dici_core:SwitchAttribute a owl:Class ;
+                          rdfs:subClassOf dici_core:DeviceAttribute ;
+                          rdfs:label "Switch Attribute" .
+
+dici_core:SwitchState a owl:Class ;
+                      rdfs:subClassOf dici_core:DynamicAttribute ,
+                                      dici_core:SwitchAttribute ;
+                      rdfs:comment "Current state of a switch (open/closed, on/off)"@en ;
+                      rdfs:label "Switch State" .
+
+dici_core:TemperatureSensor a owl:Class ;
+                            rdfs:subClassOf dici_core:Sensor ;
+                            rdfs:label "Temperature Sensor" ;
+                            dici_core:hasDefaultUnit unit:DEG_C .
+
+dici_core:ThermalEnergyCarrier a owl:Class ;
+                               rdfs:subClassOf dici_core:EnergyCarrier ;
+                               rdfs:label "Thermal Energy Carrier" .
+
+dici_core:ThermalEnergyCarrierAttribute a owl:Class ;
+                                        rdfs:subClassOf dici_core:EnergyCarrierAttribute .
+
+dici_core:TimeSeries a owl:Class ;
+                     rdfs:comment "A sequence of data points indexed in time order, typically used to represent dynamic attributes over time"@en ;
+                     rdfs:label "Time Series" ;
+                     dici_core:definition "A time series is a series of data points indexed (or listed or graphed) in time order. Time series data is used to track changes over time for dynamic attributes."@en .
+
+dici_core:TransportProcess a owl:Class ;
+                           rdfs:subClassOf dici_core:Process ;
+                           rdfs:comment "Process that transports energy or materials without transformation"@en ;
+                           rdfs:label "Transport Process" .
+
+dici_core:TransportProcessAttribute a owl:Class ;
+                                    rdfs:subClassOf dici_core:ProcessAttribute ;
+                                    rdfs:label "Transport Process Attribute" .
+
+dici_core:Turbine a owl:Class ;
+                  rdfs:subClassOf dici_core:EnergyConverter ;
+                  rdfs:label "Turbine" .
+
+dici_core:UnitBasedCost a owl:Class ;
+                        rdfs:subClassOf dici_core:CostAttribute ,
+                                        [ a owl:Restriction ;
+                                          owl:onProperty qudt:unit ;
+                                          owl:someValuesFrom qudt:Unit
+                                        ] ,
+                                        [ a owl:Restriction ;
+                                          owl:onProperty dici_core:currency ;
+                                          owl:someValuesFrom fibo-currency:Currency
+                                        ] ,
+                                        [ a owl:Restriction ;
+                                          owl:onProperty qudt:numericValue ;
+                                          owl:someValuesFrom xsd:decimal
+                                        ] ;
+                        rdfs:label "Unit-based Cost" .
+
+dici_core:Valve a owl:Class ;
+                rdfs:subClassOf dici_core:Actuator ;
+                rdfs:comment "Actuator that controls fluid flow"@en ;
+                rdfs:label "Valve" .
+
+dici_core:Wind a owl:Class ;
+               rdfs:subClassOf dici_core:RenewableResource ;
+               rdfs:label "Wind Resource" .
+
+dici_core:WindResourceAttribute a owl:Class ;
+                                rdfs:subClassOf dici_core:RenewableResourceAttribute .
+
+fibo-currency:Currency a owl:Class .
+
+unit:KiloW-HR a owl:NamedIndividual .
